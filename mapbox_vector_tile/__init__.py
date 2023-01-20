@@ -1,7 +1,7 @@
 from mapbox_vector_tile import decoder, encoder
 
 
-def decode(tile, per_layer_options=None, default_options=None):
+def decode(tile, per_layer_options=None, default_options=None, y_coord_down=None):
     """Decode the provided `tile`
 
     Args:
@@ -29,7 +29,12 @@ def decode(tile, per_layer_options=None, default_options=None):
             `None`.
             * `geojson`: when set to `False`, the behaviour of mapbox-vector-tile version 1.* is used. When set
             to `False`, the retrieved dictionary is a valid geojson file. Default to `True`.
+        The `y_coord_down` parameter is supported temporarily for backwards compatibility but will be removed soon, use 
+        `default_options["y_coord_down"]` instead.
     """
+    if "y_coord_down" not in default_options and y_coord_down:
+        warnings.warn("`y_coord_down` parameter deprecated, use `default_options` instead", DeprecationWarning)
+        default_options["y_coord_down"] = y_coord_down
     vector_tile = decoder.TileData(pbf_data=tile, per_layer_options=per_layer_options, default_options=default_options)
     message = vector_tile.get_message()
     return message
